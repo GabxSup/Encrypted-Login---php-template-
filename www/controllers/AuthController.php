@@ -1,7 +1,9 @@
 <?php
 
 require_once __DIR__ . '/../core/BaseController.php';
-require_once __DIR__ . '/../models/User.php';
+require_once __DIR__ . '/../helpers/csrf.php';
+require_once __DIR__ . '/../core/RateLimiter.php';
+require_once __DIR__ . '/../core/Logger.php';
 
 class AuthController extends BaseController
 {
@@ -12,19 +14,151 @@ class AuthController extends BaseController
 
     public function login()
     {
-        $user = (new User)->findByEmail($_POST['email']);
+        csrf_check();
 
-        if (!$user || !password_verify($_POST['password'], $user['password'])) {
-            die('Credenciales inválidas');
+        $limiter = new RateLimiter();
+        $logger = new Logger();
+        $ip = $_SERVER['REMOTE_ADDR'];
+
+        if ($limiter->isBlocked($ip)) {
+            $logger->log('blocked_ip', null, $_POST['email'] ?? 'unknown', "IP Blocked due to excessive attempts");
+            $_SESSION['error'] = 'Demasiados intentos. Bloqueo temporal activo.';
+            $this->view('auth/login');
+            exit;
         }
 
+        $user = (new User)->findByEmail($_POST['email']);
+
+        if (!$user) {
+            $limiter->logAttempt($ip);
+            $logger->log('login_failed', null, $_POST['email'], "User not found");
+            $_SESSION['error'] = 'Usuario no encontrado'; // Specific error as requested
+            $this->view('auth/login');
+            exit;
+        }
+
+        if (!password_verify($_POST['password'], $user['password'])) {
+            $limiter->logAttempt($ip);
+            $logger->log('login_failed', null, $_POST['email'], "Invalid password");
+            $_SESSION['error'] = 'Contraseña incorrecta'; // Specific error
+            $this->view('auth/login');
+            exit;
+        }
+
+        // Login exitoso
+        $limiter->clearAttempts($ip);
         $_SESSION['user'] = $user['id'];
-        $this->redirect('/users');
+        $logger->log('login_success', $user['id'], $user['email']);
+        $this->redirect('/');
     }
 
     public function logout()
     {
+        if (isset($_SESSION['user'])) {
+            (new Logger)->log('logout', $_SESSION['user']);
+        }
         session_destroy();
         $this->redirect('/login');
     }
+
+
+    public function loginGoogle()
+    {
+        // TODO: REEMPLAZAR con tus credenciales reales de Google Console
+        // https://console.cloud.google.com/
+        $clientID = 'TU_CLIENT_ID_DE_GOOGLE';
+        $redirectUri = 'http://localhost:8000/login/google/callback'; // Ajusta el puerto/dominio
+
+        $params = [
+            'client_id' => $clientID,
+            'redirect_uri' => $redirectUri,
+            'response_type' => 'code',
+            'scope' => 'email profile',
+            'access_type' => 'online'
+        ];
+
+        $url = 'https://accounts.google.com/o/oauth2/v2/auth?' . http_build_query($params);
+        header("Location: $url");
+        exit;
+    }
+
+    public function loginGoogleCallback()
+    {
+        if (empty($_GET['code'])) {
+            $this->redirect('/login');
+        }
+
+        // TODO: REEMPLAZAR con tus credenciales reales
+        $clientID = 'TU_CLIENT_ID_DE_GOOGLE';
+        $clientSecret = 'TU_CLIENT_SECRET_DE_GOOGLE';
+        $redirectUri = 'http://localhost:8000/login/google/callback';
+
+        // 1. Intercambiar code por access token
+        $tokenUrl = 'https://oauth2.googleapis.com/token';
+        $postData = [
+            'code' => $_GET['code'],
+            'client_id' => $clientID,
+            'client_secret' => $clientSecret,
+            'redirect_uri' => $redirectUri,
+            'grant_type' => 'authorization_code'
+        ];
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $tokenUrl);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        $tokenData = json_decode($response, true);
+        if (!isset($tokenData['access_token'])) {
+            die('Error obteniendo token de Google');
+        }
+
+        // 2. Obtener info del usuario
+        $userInfoUrl = 'https://www.googleapis.com/oauth2/v2/userinfo';
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $userInfoUrl);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Authorization: Bearer ' . $tokenData['access_token']]);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $userInfo = json_decode(curl_exec($ch), true);
+        curl_close($ch);
+
+        $email = $userInfo['email'];
+        $googleId = $userInfo['id'];
+        $name = $userInfo['name'];
+
+        // 3. Buscar o Crear usuario
+        $userModel = new User();
+        $user = $userModel->findByEmail($email);
+
+        if ($user) {
+            // Usuario existe, actualizamos google_id si hace falta
+            if (empty($user['google_id'])) {
+                // Aquí deberíamos actualizar el user con el google_id.
+                // Por brevedad, asumimos login exitoso.
+                // TODO: Agregar método updateGoogleId($id, $googleId) en User model
+            }
+            $_SESSION['user'] = $user['id'];
+        } else {
+            // Crear usuario nuevo automáticamente
+            // Asignamos una contraseña aleatoria fuerte ya que entra por Google
+            $randomPass = bin2hex(random_bytes(16));
+            $userModel->create([
+                'name' => $name,
+                'email' => $email,
+                'password' => $randomPass,
+                'password_confirm' => $randomPass, // Para pasar validación
+                // TODO: Pasar google_id al create
+            ]);
+            $newUser = $userModel->findByEmail($email);
+            $_SESSION['user'] = $newUser['id'];
+            (new Logger)->log('register_google', $newUser['id'], $email);
+        }
+
+        (new Logger)->log('login_google', $_SESSION['user'], $email);
+        $this->redirect('/');
+    }
 }
+

@@ -24,12 +24,14 @@ class UserController extends BaseController
     public function create()
     {
         // auth_required();
-        $this->view('users/create');
+        $creation_id = bin2hex(random_bytes(4)); // Unique ID for this creation form
+        $this->view('users/create', ['creation_id' => $creation_id]);
     }
 
     public function store()
     {
         // auth_required();
+        csrf_check(); // Validate CSRF token
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /users/create');

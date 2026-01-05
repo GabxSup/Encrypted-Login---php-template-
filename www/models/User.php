@@ -44,6 +44,11 @@ class User
             return false;
         }
 
+        // Confirmar contraseña
+        if ($data['password'] !== ($data['password_confirm'] ?? '')) {
+            return false;
+        }
+
         // evitar duplicados
         if ($this->findByEmail($data['email'])) {
             return false;
@@ -54,10 +59,13 @@ class User
             VALUES (:name, :email, :password)
         ");
 
+        // Usar ARGON2ID si está disponible, sino BCRYPT como fallback seguro
+        $algo = defined('PASSWORD_ARGON2ID') ? PASSWORD_ARGON2ID : PASSWORD_BCRYPT;
+
         return $stmt->execute([
             'name' => trim($data['name']),
             'email' => trim($data['email']),
-            'password' => password_hash($data['password'], PASSWORD_BCRYPT),
+            'password' => password_hash($data['password'], $algo),
         ]);
     }
 }

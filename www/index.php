@@ -1,4 +1,21 @@
 <?php
+
+// 🛡️ Seguridad: Headers HTTP para mitigar ataques comunes
+header("X-Frame-Options: DENY"); // Previene Clickjacking
+header("X-Content-Type-Options: nosniff"); // Previene MIME Sniffing
+header("Content-Security-Policy: default-src 'self' https:; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:;"); // Básico CSP
+header("Referrer-Policy: strict-origin-when-cross-origin");
+
+// 🛡️ Seguridad: Configuración de cookies de sesión
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path' => '/',
+    'domain' => '',
+    'secure' => isset($_SERVER['HTTPS']), // Solo enviar en HTTPS si existe
+    'httponly' => true, // Previene acceso via JS (XSS)
+    'samesite' => 'Strict' // Previene CSRF
+]);
+
 session_start();
 
 require_once __DIR__ . '/config/database.php';
