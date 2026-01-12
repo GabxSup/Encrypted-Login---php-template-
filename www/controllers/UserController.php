@@ -4,6 +4,13 @@ require_once __DIR__ . '/../core/BaseController.php';
 require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/../helpers/auth.php';
 require_once __DIR__ . '/../helpers/csrf.php';
+require_once __DIR__ . '/../helpers/Lang.php';
+
+// Set language
+if (session_status() === PHP_SESSION_NONE)
+    session_start();
+$lang = $_SESSION['lang'] ?? 'en';
+Lang::load($lang);
 
 class UserController extends BaseController
 {
@@ -41,7 +48,7 @@ class UserController extends BaseController
         $user = new User();
 
         if (!$user->create($_POST)) {
-            $_SESSION['error'] = 'Datos inválidos o email duplicado';
+            $_SESSION['error'] = __('error_invalid_data');
             header('Location: /users/create');
             exit;
         }

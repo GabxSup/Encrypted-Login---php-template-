@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard - Panel de Control</title>
+    <title><?= __('dashboard') ?></title>
     <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 
@@ -29,7 +29,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
                         </svg>
-                        Resumen
+                        <?= __('overview') ?>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -39,7 +39,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
                         </svg>
-                        Usuarios
+                        <?= __('users') ?>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -49,7 +49,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
                         </svg>
-                        Seguridad (Próx.)
+                        <?= __('security_soon') ?>
                     </a>
                 </li>
             </ul>
@@ -61,7 +61,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round"
                             d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
                     </svg>
-                    Cerrar Sesión
+                    <?= __('logout') ?>
                 </a>
             </div>
         </aside>
@@ -71,10 +71,11 @@
             <!-- Top Header -->
             <header class="top-header">
                 <div>
-                    <h2 style="font-size: 1.1rem; font-weight: 500; color: var(--text-muted);">Bienvenido de nuevo,</h2>
+                    <h2 style="font-size: 1.1rem; font-weight: 500; color: var(--text-muted);"><?= __('welcome_back') ?>
+                    </h2>
                     <h1
                         style="font-size: 1.5rem; text-align: left; margin: 0; background: none; -webkit-text-fill-color: initial; color: white;">
-                        <?= htmlspecialchars($user['name'] ?? 'Usuario') ?>
+                        <?= htmlspecialchars($user['name'] ?? 'User') ?>
                     </h1>
                 </div>
 
@@ -101,45 +102,45 @@
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-value"><?= count($logs) ?></div>
-                    <div class="stat-label">Actividades Registradas</div>
+                    <div class="stat-label"><?= __('logged_activities') ?></div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-value" style="color: #4ade80;">98%</div>
-                    <div class="stat-label">Nivel de Seguridad</div>
+                    <div class="stat-label"><?= __('security_level') ?></div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-value" style="color: #60a5fa;">2</div>
-                    <div class="stat-label">Dispositivos Vinculados</div>
+                    <div class="stat-label"><?= __('linked_devices') ?></div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-value" style="color: #f472b6;">0</div>
-                    <div class="stat-label">Alertas Críticas</div>
+                    <div class="stat-label"><?= __('critical_alerts') ?></div>
                 </div>
             </div>
 
             <!-- Security Logs -->
             <div class="card">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                    <h3>Bitácora de Seguridad</h3>
-                    <a href="#" style="font-size: 0.85rem; color: var(--primary); text-decoration: none;">Descargar
-                        Reporte (CSV)</a>
+                    <h3><?= __('security_log') ?></h3>
+                    <a href="#"
+                        style="font-size: 0.85rem; color: var(--primary); text-decoration: none;"><?= __('download_report') ?></a>
                 </div>
 
                 <div style="overflow-x: auto;">
                     <table style="width: 100%; border-collapse: collapse;">
                         <thead>
                             <tr>
-                                <th>Fecha</th>
-                                <th>Evento</th>
-                                <th>Dirección IP</th>
-                                <th>Detalles del sistema</th>
+                                <th><?= __('date') ?></th>
+                                <th><?= __('event') ?></th>
+                                <th><?= __('ip_address') ?></th>
+                                <th><?= __('system_details') ?></th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php if (empty($logs)): ?>
                                 <tr>
-                                    <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 20px;">Sin
-                                        actividad reciente.</td>
+                                    <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 20px;">
+                                        <?= __('no_recent_activity') ?></td>
                                 </tr>
                             <?php else: ?>
                                 <?php foreach ($logs as $log): ?>
@@ -155,13 +156,15 @@
                                             };
                                             ?>
                                             <span style="color: <?= $badgeColor ?>; font-weight: 500;">
-                                                <?= htmlspecialchars(str_replace('_', ' ', ucfirst($log['action']))) ?>
+                                                <?= htmlspecialchars(__('action_' . $log['action'])) ?>
                                             </span>
                                         </td>
                                         <td style="font-family: monospace; color: var(--text-muted);">
-                                            <?= htmlspecialchars($log['ip_address']) ?></td>
+                                            <?= htmlspecialchars($log['ip_address']) ?>
+                                        </td>
                                         <td style="color: var(--text-muted); font-size: 0.85rem;">
-                                            <?= htmlspecialchars($log['details'] ?? 'N/A') ?></td>
+                                            <?= htmlspecialchars($log['details'] ?? 'N/A') ?>
+                                        </td>
                                     </tr>
                                 <?php endforeach; ?>
                             <?php endif; ?>

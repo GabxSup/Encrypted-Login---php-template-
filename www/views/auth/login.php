@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Sesión</title>
+    <title><?= __('sign_in') ?></title>
     <link rel="stylesheet" href="/assets/css/style.css">
     <style>
         .google-btn {
@@ -28,7 +28,7 @@
 <body>
 
     <div class="container" style="max-width: 400px;">
-        <h1>Iniciar Sesión</h1>
+        <h1><?= __('sign_in') ?></h1>
 
         <?php if (isset($_SESSION['error'])): ?>
             <div class="alert alert-error">
@@ -41,14 +41,14 @@
             <input type="hidden" name="_csrf" value="<?= csrf_token() ?>">
 
             <div class="form-group">
-                <label for="email">Correo Electrónico</label>
-                <input type="email" id="email" name="email" placeholder="ejemplo@correo.com" required>
+                <label for="email"><?= __('email_address') ?></label>
+                <input type="email" id="email" name="email" placeholder="example@email.com" required>
             </div>
 
             <div class="form-group">
-                <label for="password">Contraseña</label>
+                <label for="password"><?= __('password') ?></label>
                 <div class="password-wrapper">
-                    <input type="password" id="password" name="password" placeholder="Tu contraseña" required>
+                    <input type="password" id="password" name="password" placeholder="<?= __('password') ?>" required>
                     <button type="button" class="password-toggle" onclick="togglePassword('password')">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor">
@@ -60,7 +60,7 @@
                 </div>
             </div>
 
-            <button type="submit" class="btn-primary">Entrar</button>
+            <button type="submit" class="btn-primary"><?= __('sign_in') ?></button>
 
             <a href="/login/google" class="btn-primary google-btn" style="text-decoration: none;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
@@ -73,15 +73,15 @@
                     <path fill="#EA4335"
                         d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.157 6.656 3.58 9 3.58z" />
                 </svg>
-                Iniciar con Google
+                </svg>
+                <?= __('sign_in_google') ?>
             </a>
         </form>
 
         <div style="margin-top: 20px; text-align: center; border-top: 1px solid var(--border); padding-top: 20px;">
-            <span style="color: var(--text-muted); font-size: 0.9rem;">¿No tienes cuenta?</span>
+            <span style="color: var(--text-muted); font-size: 0.9rem;"><?= __('no_account') ?></span>
             <a href="/users/create"
-                style="color: var(--primary); text-decoration: none; font-weight: bold; margin-left: 5px;">Crear
-                cuenta</a>
+                style="color: var(--primary); text-decoration: none; font-weight: bold; margin-left: 5px;"><?= __('create_account') ?></a>
         </div>
     </div>
 

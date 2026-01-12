@@ -39,33 +39,58 @@ class User
 
     public function create(array $data): bool
     {
-        // 8️⃣ Validaciones básicas
+        // Basic validations
         if (empty($data['name']) || empty($data['email']) || empty($data['password'])) {
             return false;
         }
 
-        // Confirmar contraseña
+        // Confirm password
         if ($data['password'] !== ($data['password_confirm'] ?? '')) {
             return false;
         }
 
-        // evitar duplicados
+        // Avoid duplicates
         if ($this->findByEmail($data['email'])) {
             return false;
         }
 
-        $stmt = $this->db->prepare("
-            INSERT INTO users (name, email, password)
-            VALUES (:name, :email, :password)
-        ");
-
-        // Usar ARGON2ID si está disponible, sino BCRYPT como fallback seguro
+        // Use ARGON2ID if available, else BCRYPT as secure fallback
         $algo = defined('PASSWORD_ARGON2ID') ? PASSWORD_ARGON2ID : PASSWORD_BCRYPT;
+        $hashedPassword = password_hash($data['password'], $algo);
 
+        // Dynamic query matching the data provided
+        // This avoids crashing if the 'google_id' column is missing in the DB
+        // for normal registrations.
+        if (isset($data['google_id'])) {
+            $stmt = $this->db->prepare("
+                INSERT INTO users (name, email, password, google_id)
+                VALUES (:name, :email, :password, :google_id)
+            ");
+            return $stmt->execute([
+                'name' => trim($data['name']),
+                'email' => trim($data['email']),
+                'password' => $hashedPassword,
+                'google_id' => $data['google_id'],
+            ]);
+        } else {
+            $stmt = $this->db->prepare("
+                INSERT INTO users (name, email, password)
+                VALUES (:name, :email, :password)
+            ");
+            return $stmt->execute([
+                'name' => trim($data['name']),
+                'email' => trim($data['email']),
+                'password' => $hashedPassword,
+            ]);
+        }
+    }
+
+    public function updateGoogleId($userId, $googleId)
+    {
+        $stmt = $this->db->prepare("UPDATE users SET google_id = :google_id WHERE id = :id");
         return $stmt->execute([
-            'name' => trim($data['name']),
-            'email' => trim($data['email']),
-            'password' => password_hash($data['password'], $algo),
+            'google_id' => $googleId,
+            'id' => $userId
         ]);
     }
 }

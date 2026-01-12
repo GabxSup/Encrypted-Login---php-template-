@@ -1,14 +1,26 @@
 :root {
-    --primary: #6366f1;
-    --primary-hover: #4f46e5;
-    --bg-gradient-start: #0f172a;
-    --bg-gradient-end: #1e293b;
-    --card-bg: rgba(30, 41, 59, 0.7);
-    --sidebar-bg: rgba(15, 23, 42, 0.9);
-    --text-main: #f8fafc;
-    --text-muted: #94a3b8;
-    --border: rgba(255, 255, 255, 0.1);
-    --glass-border: 1px solid rgba(255, 255, 255, 0.05);
+    /* Monochrome Palette (Black, White, Gray) */
+    --primary: #171717;
+    /* Neutral-900 (Black) */
+    --primary-hover: #404040;
+    /* Neutral-700 (Dark Gray) */
+
+    --bg-gradient-start: #FFFFFF;
+    /* White */
+    --bg-gradient-end: #F5F5F5;
+    /* Neutral-100 (Light Gray) */
+
+    --card-bg: rgba(255, 255, 255, 0.95);
+    --sidebar-bg: #FAFAFA;
+    /* Neutral-50 */
+
+    --text-main: #171717;
+    /* Black */
+    --text-muted: #737373;
+    /* Neutral-500 */
+
+    --border: rgba(0, 0, 0, 0.1);
+    --glass-border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 * {
@@ -42,7 +54,7 @@ body.auth-page {
 .sidebar {
     width: 260px;
     background: var(--sidebar-bg);
-    border-right: var(--glass-border);
+    border-right: 1px solid rgba(0, 0, 0, 0.05);
     backdrop-filter: blur(10px);
     display: flex;
     flex-direction: column;
@@ -58,9 +70,7 @@ body.auth-page {
     font-size: 1.5rem;
     font-weight: 700;
     margin-bottom: 2rem;
-    background: linear-gradient(to right, #818cf8, #c084fc);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--primary);
     display: flex;
     align-items: center;
     gap: 10px;
@@ -89,8 +99,9 @@ body.auth-page {
 
 .nav-link:hover,
 .nav-link.active {
-    background: rgba(99, 102, 241, 0.1);
-    color: white;
+    background: rgba(141, 110, 99, 0.1);
+    /* Primary color low opacity */
+    color: var(--primary);
 }
 
 .nav-link svg {
@@ -124,7 +135,7 @@ body.auth-page {
 .avatar-small {
     width: 40px;
     height: 40px;
-    background: linear-gradient(135deg, var(--primary), #c084fc);
+    background: linear-gradient(135deg, var(--primary), #A1887F);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -137,10 +148,10 @@ body.auth-page {
 .card {
     background: var(--card-bg);
     backdrop-filter: blur(10px);
-    border: var(--glass-border);
+    border: 1px solid rgba(255, 255, 255, 0.8);
     border-radius: 16px;
     padding: 1.5rem;
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
     margin-bottom: 1.5rem;
 }
 
@@ -149,12 +160,11 @@ body.auth-page {
     max-width: 500px;
     background: var(--card-bg);
     backdrop-filter: blur(10px);
-    border: 1px solid var(--border);
+    border: 1px solid rgba(255, 255, 255, 0.8);
     border-radius: 16px;
     padding: 2rem;
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
     margin: 0 auto;
-    /* Centering for Auth pages */
 }
 
 /* Grid for Stats */
@@ -166,16 +176,17 @@ body.auth-page {
 }
 
 .stat-card {
-    background: rgba(255, 255, 255, 0.03);
-    border: var(--glass-border);
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.8);
     padding: 1.5rem;
     border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .stat-value {
     font-size: 2rem;
     font-weight: 700;
-    color: white;
+    color: var(--text-main);
     margin-bottom: 0.5rem;
 }
 
@@ -189,14 +200,11 @@ h1 {
     font-size: 1.8rem;
     margin-bottom: 1.5rem;
     text-align: center;
-    background: linear-gradient(to right, #818cf8, #c084fc);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--text-main);
 }
 
 .dashboard-layout h1 {
     text-align: left;
-    /* Reset for dashboard header */
     margin-bottom: 0;
 }
 
@@ -209,22 +217,25 @@ label {
     margin-bottom: 0.5rem;
     color: var(--text-muted);
     font-size: 0.9rem;
+    font-weight: 500;
 }
 
 input {
     width: 100%;
     padding: 10px 14px;
-    background: rgba(15, 23, 42, 0.6);
-    border: 1px solid var(--border);
+    background: white;
+    border: 1px solid #D6D3D1;
+    /* Stone-300 */
     border-radius: 8px;
-    color: white;
+    color: var(--text-main);
     font-size: 1rem;
-    transition: border-color 0.2s;
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 input:focus {
     outline: none;
     border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(141, 110, 99, 0.1);
 }
 
 button.btn-primary,
@@ -241,10 +252,32 @@ button.btn-primary,
     cursor: pointer;
     text-decoration: none;
     text-align: center;
+    transition: opacity 0.2s;
 }
 
 .btn-primary:hover {
     opacity: 0.9;
+}
+
+.btn-secondary {
+    display: inline-block;
+    padding: 12px;
+    background: #e5e5e5;
+    /* Neutral-200 */
+    color: var(--text-main);
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    transition: background 0.2s;
+}
+
+.btn-secondary:hover {
+    background: #d4d4d4;
+    /* Neutral-300 */
 }
 
 /* Tables */
@@ -259,11 +292,56 @@ th {
     text-align: left;
     padding: 12px;
     color: var(--text-muted);
-    border-bottom: 1px solid var(--border);
-    font-weight: 500;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+    font-weight: 600;
 }
 
 td {
     padding: 12px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Utilities / Extras */
+.alert-error {
+    background-color: #FEE2E2;
+    color: #991B1B;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    text-align: center;
+    border: 1px solid #FECACA;
+}
+
+.back-link {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+    display: inline-block;
+}
+
+.back-link:hover {
+    color: var(--primary);
+}
+
+.password-wrapper {
+    position: relative;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+}
+
+.password-toggle svg {
+    width: 20px;
+    height: 20px;
 }

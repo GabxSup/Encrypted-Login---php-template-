@@ -4,6 +4,13 @@ require_once __DIR__ . '/../core/BaseController.php';
 require_once __DIR__ . '/../helpers/csrf.php';
 require_once __DIR__ . '/../core/RateLimiter.php';
 require_once __DIR__ . '/../core/Logger.php';
+require_once __DIR__ . '/../helpers/Lang.php';
+
+// Set language (basic checking from session or default)
+if (session_status() === PHP_SESSION_NONE)
+    session_start();
+$lang = $_SESSION['lang'] ?? 'en';
+Lang::load($lang);
 
 class AuthController extends BaseController
 {
@@ -22,7 +29,7 @@ class AuthController extends BaseController
 
         if ($limiter->isBlocked($ip)) {
             $logger->log('blocked_ip', null, $_POST['email'] ?? 'unknown', "IP Blocked due to excessive attempts");
-            $_SESSION['error'] = 'Demasiados intentos. Bloqueo temporal activo.';
+            $_SESSION['error'] = __('error_too_many_attempts');
             $this->view('auth/login');
             exit;
         }
@@ -32,7 +39,9 @@ class AuthController extends BaseController
         if (!$user) {
             $limiter->logAttempt($ip);
             $logger->log('login_failed', null, $_POST['email'], "User not found");
-            $_SESSION['error'] = 'Usuario no encontrado'; // Specific error as requested
+            $limiter->logAttempt($ip);
+            $logger->log('login_failed', null, $_POST['email'], "User not found");
+            $_SESSION['error'] = __('error_user_not_found'); // Specific error as requested
             $this->view('auth/login');
             exit;
         }
@@ -40,7 +49,9 @@ class AuthController extends BaseController
         if (!password_verify($_POST['password'], $user['password'])) {
             $limiter->logAttempt($ip);
             $logger->log('login_failed', null, $_POST['email'], "Invalid password");
-            $_SESSION['error'] = 'Contraseña incorrecta'; // Specific error
+            $limiter->logAttempt($ip);
+            $logger->log('login_failed', null, $_POST['email'], "Invalid password");
+            $_SESSION['error'] = __('error_incorrect_password'); // Specific error
             $this->view('auth/login');
             exit;
         }
@@ -136,9 +147,7 @@ class AuthController extends BaseController
         if ($user) {
             // Usuario existe, actualizamos google_id si hace falta
             if (empty($user['google_id'])) {
-                // Aquí deberíamos actualizar el user con el google_id.
-                // Por brevedad, asumimos login exitoso.
-                // TODO: Agregar método updateGoogleId($id, $googleId) en User model
+                $userModel->updateGoogleId($user['id'], $googleId);
             }
             $_SESSION['user'] = $user['id'];
         } else {
@@ -146,11 +155,10 @@ class AuthController extends BaseController
             // Asignamos una contraseña aleatoria fuerte ya que entra por Google
             $randomPass = bin2hex(random_bytes(16));
             $userModel->create([
-                'name' => $name,
                 'email' => $email,
                 'password' => $randomPass,
                 'password_confirm' => $randomPass, // Para pasar validación
-                // TODO: Pasar google_id al create
+                'google_id' => $googleId,
             ]);
             $newUser = $userModel->findByEmail($email);
             $_SESSION['user'] = $newUser['id'];
