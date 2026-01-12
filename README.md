@@ -24,7 +24,7 @@
 *   **Responsive:** Adaptable a cualquier dispositivo.
 *   **Feedback Visual:** Alertas y mensajes de estado claros.
 
-### ⚡ Funcionalidades
+###  Funcionalidades
 *   **Gestión de Usuarios:** CRUD completo (Crear, Leer, Editar, Listar).
 *   **Google Login:** Integración nativa con OAuth 2.0.
 *   **Dashboard de Actividad:** Historial de accesos para el usuario.
