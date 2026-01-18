@@ -1,5 +1,6 @@
 # Secure PHP Project
 
+![Version](https://img.shields.io/badge/Version-1.0.1-blue?style=for-the-badge)
 ![PHP Version](https://img.shields.io/badge/PHP-8.0%2B-777BB4?style=for-the-badge&logo=php&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 ![Security](https://img.shields.io/badge/Security-Argon2id-blue?style=for-the-badge&logo=security)
