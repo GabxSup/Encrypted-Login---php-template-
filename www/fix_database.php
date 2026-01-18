@@ -4,30 +4,40 @@ require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/core/Logger.php';
 require_once __DIR__ . '/core/RateLimiter.php';
 
-echo "Starting database fix...\n";
+echo "====== Starting Database Fix ======\n";
 
 try {
     global $pdo;
-    
+
+    if (!$pdo) {
+        throw new Exception("Database connection failed. Check config/database.php.");
+    }
+
     // 1. Create Users Table
+    echo "[1/3] Checking 'users' table...\n";
     $sql = file_get_contents(__DIR__ . '/migrations/init.sql');
-    $pdo->exec($sql);
-    echo "Users table created successfully.\n";
+    if ($sql) {
+        $pdo->exec($sql);
+        echo "   -> 'users' table check/creation completed.\n";
+    } else {
+        echo "   -> ERROR: migrations/init.sql not found or empty.\n";
+    }
 
     // 2. Ensure Logger Table
+    echo "[2/3] Checking 'activity_logs' table...\n";
     $logger = new Logger();
     $logger->ensureTableExists();
-    echo "Logger table verified.\n";
+    echo "   -> 'activity_logs' table verified.\n";
 
     // 3. Ensure RateLimiter Table
+    echo "[3/3] Checking 'login_attempts' table...\n";
+    // Creating the object triggers the constructor which calls ensureTableExists
     $limiter = new RateLimiter();
-    // Re-instantiate to trigger constructor which calls ensureTableExists
-    // or we can't access private method, but the constructor does it.
-    echo "RateLimiter table verified.\n";
+    echo "   -> 'login_attempts' table verified.\n";
 
-    echo "Database fixed successfully!\n";
+    echo "\n====== Database Fixed Successfully! ======\n";
 
 } catch (Exception $e) {
-    echo "Error: " . $e->getMessage() . "\n";
+    echo "\n❌ FATAL ERROR: " . $e->getMessage() . "\n";
     exit(1);
 }
