@@ -1,12 +1,13 @@
 <?php
 
-$host = 'mariadb';
-$db = 'appdb';
-$user = 'appuser';
-$pass = 'apppass';
+$host = getenv('DB_HOST') ?: 'mariadb';
+$port = getenv('DB_PORT') ?: '3306';
+$db = getenv('DB_NAME') ?: 'appdb';
+$user = getenv('DB_USER') ?: 'appuser';
+$pass = getenv('DB_PASS') ?: 'apppass';
 $charset = 'utf8mb4';
 
-$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+$dsn = "mysql:host=$host;port=$port;dbname=$db;charset=$charset";
 
 $options = [
     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,

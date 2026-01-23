@@ -18,6 +18,14 @@ try {
     $sql = file_get_contents(__DIR__ . '/migrations/init.sql');
     if ($sql) {
         $pdo->exec($sql);
+
+        // Ensure Index exists for existing tables (won't run if table created afresh)
+        try {
+            $pdo->exec("CREATE INDEX idx_google_id ON users(google_id)");
+        } catch (Exception $e) {
+            // Ignore if index already exists
+        }
+
         echo "   -> 'users' table check/creation completed.\n";
     } else {
         echo "   -> ERROR: migrations/init.sql not found or empty.\n";

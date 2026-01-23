@@ -64,6 +64,23 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- Pagination -->
+            <div style="margin-top: 20px; display: flex; justify-content: center; gap: 10px;">
+                <?php if ($page > 1): ?>
+                    <a href="/users?page=<?= $page - 1 ?>" class="btn-primary"
+                        style="text-decoration: none; background: #e5e5e5; color: #171717;">&larr; <?= __('prev') ?></a>
+                <?php endif; ?>
+
+                <span style="align-self: center; color: var(--text-muted); font-size: 0.9rem;">
+                    Page <?= $page ?> of <?= $totalPages ?>
+                </span>
+
+                <?php if ($page < $totalPages): ?>
+                    <a href="/users?page=<?= $page + 1 ?>" class="btn-primary" style="text-decoration: none;">&rarr;
+                        <?= __('next') ?></a>
+                <?php endif; ?>
+            </div>
         </div>
     </div>
 

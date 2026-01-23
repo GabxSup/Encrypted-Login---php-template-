@@ -4,6 +4,8 @@ require_once __DIR__ . '/../core/BaseController.php';
 require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/../helpers/auth.php';
 require_once __DIR__ . '/../helpers/csrf.php';
+require_once __DIR__ . '/../core/RateLimiter.php';
+require_once __DIR__ . '/../core/Logger.php';
 require_once __DIR__ . '/../helpers/Lang.php';
 
 // Set language
@@ -17,8 +19,18 @@ class UserController extends BaseController
     public function index()
     {
         auth_required();
-        $users = (new User)->all();
-        $this->view('users/index', compact('users'));
+
+        $page = max(1, intval($_GET['page'] ?? 1));
+        $limit = 10;
+        $offset = ($page - 1) * $limit;
+
+        $userModel = new User();
+        $totalUsers = $userModel->count();
+        $totalPages = ceil($totalUsers / $limit);
+
+        $users = $userModel->all($limit, $offset);
+
+        $this->view('users/index', compact('users', 'page', 'totalPages'));
     }
 
     public function show($id)
@@ -45,13 +57,43 @@ class UserController extends BaseController
             exit;
         }
 
+        // 🛡️ DDDOS Protection: Rate Limiting for Registration
+        $limiter = new RateLimiter();
+        $ip = $_SERVER['REMOTE_ADDR'];
+
+        if ($limiter->isBlocked($ip)) {
+            (new Logger)->log('blocked_ip_register', null, 'system', "IP Blocked due to excessive registration attempts");
+            $_SESSION['error'] = __('error_too_many_attempts');
+            header('Location: /users/create');
+            exit;
+        }
+
+        // Input Validation
+        $email = filter_var($_POST['email'] ?? '', FILTER_VALIDATE_EMAIL);
+        $password = $_POST['password'] ?? '';
+
+        if (!$email) {
+            $_SESSION['error'] = 'Invalid email format';
+            header('Location: /users/create');
+            exit;
+        }
+
+        if (strlen($password) < 8) {
+            $_SESSION['error'] = 'Password must be at least 8 characters long';
+            header('Location: /users/create');
+            exit;
+        }
+
         $user = new User();
 
         if (!$user->create($_POST)) {
+            $limiter->logAttempt($ip); // Log failed attempt (potential spam)
             $_SESSION['error'] = __('error_invalid_data');
             header('Location: /users/create');
             exit;
         }
+
+        $limiter->clearAttempts($ip); // Clear on success (optional, or keep generic limiter separate)
 
         header('Location: /users');
     }

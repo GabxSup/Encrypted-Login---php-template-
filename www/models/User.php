@@ -12,11 +12,18 @@ class User
         $this->db = $pdo;
     }
 
-    public function all()
+    public function all(int $limit = 10, int $offset = 0)
     {
-        return $this->db
-            ->query("SELECT id, name, email FROM users")
-            ->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = $this->db->prepare("SELECT id, name, email FROM users LIMIT :limit OFFSET :offset");
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function count(): int
+    {
+        return (int) $this->db->query("SELECT COUNT(*) FROM users")->fetchColumn();
     }
 
     public function findByEmail(string $email)
@@ -41,6 +48,11 @@ class User
     {
         // Basic validations
         if (empty($data['name']) || empty($data['email']) || empty($data['password'])) {
+            return false;
+        }
+
+        // Validar formato de email
+        if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
             return false;
         }
 
